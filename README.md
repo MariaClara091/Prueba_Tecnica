@@ -8,12 +8,12 @@ El objetivo es identificar patrones de rendimiento, evolución de la competitivi
 
 ## Objetivos
 
-*  1. Análisis donde identifique las variables del conjunto de datos mostrando los valores nulos, duplicados y el tipo de variable.
-*  2. Validación cruzada entre las tablas, identifique los campos que relacionan las tablas y si existen datos faltantes en dichos campos.
-*  3. Elabore la tabla de posiciones del mundial realizado en 1991. Tenga en cuenta que cada partido ganado da 3 puntos, cada partido empatado da 1 punto. Así mismo, las tarjetas amarillas suman -1 punto para juego limpio y las tarjetas rojas – 2 puntos a juego limpio. La tabla debe tener la siguiente estructura:
+* Análisis donde identifique las variables del conjunto de datos mostrando los valores nulos, duplicados y el tipo de variable.
+* Validación cruzada entre las tablas, identifique los campos que relacionan las tablas y si existen datos faltantes en dichos campos.
+* Elaborar la tabla de posiciones del mundial realizado en 1991. Tenga en cuenta que cada partido ganado da 3 puntos, cada partido empatado da 1 punto. Así mismo, las tarjetas amarillas suman -1 punto para juego limpio y las tarjetas rojas – 2 puntos a juego limpio. La tabla debe tener la siguiente estructura:
 Equipo | Partidos Jugados (PJ) | Partidos Ganados (PG) | Partidos Empatados (PE) | Partidos Perdidos (PP)| Goles a Favor (GF) | Goles en Contra (GC) | Diferencia de Goles (GF – GC) | Juego Limpio (JL) | Puntos
-*  4. Generar la tabla de goleadoras del Mundial 2023.
-*  5. Construya una rutina cuya salida sea UNA ÚNICA TABLA que muestre:
+* Generar la tabla de goleadoras del Mundial 2023.
+* Construya una rutina cuya salida sea UNA ÚNICA TABLA que muestre:
 Año| Host | Equipo | Partidos Jugados | Goles Totales marcados | Promedio de Goles marcados | Goles Totales recibidos | promedio de goles recibidos | partidos totales ganados | partidos totales perdidos | partidos totales empatados | promedio de asistencia por equipo. 
 
 ## Datasets utilizados
