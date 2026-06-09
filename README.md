@@ -254,53 +254,6 @@ Swagger UI disponible en: **http://localhost:8000/docs**
 docker build -t student-api .
 docker run -p 8000:8000 student-api
 ```
-
-### Endpoints
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/` | Health check — estado del modelo |
-| POST | `/predict` | Predecir riesgo sin guardar registro |
-| POST | `/students` | Registrar estudiante + predecir + guardar |
-| GET | `/students` | Listar todos los registros |
-| GET | `/students/{id}` | Obtener estudiante por ID |
-| PUT | `/students/{id}` | Actualizar datos y recalcular predicción |
-| DELETE | `/students/{id}` | Eliminar registro |
-
-### Ejemplo de uso — POST `/predict`
-
-**Request:**
-```json
-{
-  "horas_de_estudio": 2,
-  "resultados_anteriores": 40,
-  "extracurricular": 0,
-  "horas_sueno": 4,
-  "num_ejercicios_resueltos": 1
-}
-```
-
-**Response:**
-```json
-{
-  "rendimiento_bajo": true,
-  "probabilidad": 0.9312,
-  "mensaje": "Alto riesgo de bajo rendimiento — se recomienda intervención inmediata."
-}
-```
-
-### Principios SOLID aplicados
-
-| Principio | Aplicación |
-|---|---|
-| **S** — Single Responsibility | Cada módulo tiene una sola función: `schemas.py` define contratos, `service.py` predice, `crud.py` almacena, `main.py` enruta |
-| **O** — Open/Closed | Se puede cambiar el modelo en `service.py` sin modificar los endpoints |
-| **L** — Liskov Substitution | Los schemas de entrada son intercambiables entre endpoints |
-| **I** — Interface Segregation | Endpoints pequeños y específicos, cada uno con una responsabilidad |
-| **D** — Dependency Inversion | `main.py` depende de abstracciones (`service`, `crud`), no de implementaciones directas |
-
----
-
 ## Instalación completa
 
 ```bash
