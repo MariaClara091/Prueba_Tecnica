@@ -139,3 +139,207 @@ Los resultados generados incluyen:
 https://pruebatecnicacaso1.streamlit.app/
 ```
 
+# Caso 2: Factores que Impactan el Desempeño en Matemáticas
+
+Análisis completo de datos estudiantiles universitarios para identificar los factores que influyen en el rendimiento académico, incluyendo modelos de Machine Learning y una API REST para detección temprana de estudiantes en riesgo.
+
+---
+
+## Estructura del Repositorio
+
+```
+caso-desempeno-matematicas/
+├── notebook/
+│   └── student_performance.ipynb     ← Análisis completo (con las fases 1, 2 y 3)
+├── api/
+│   ├── main.py                        ← Rutas FastAPI
+│   ├── schemas.py                     ← Modelos Pydantic (entrada/salida)
+│   ├── service.py                     ← Lógica de predicción ML
+│   ├── crud.py                        ← CRUD simulado en memoria
+│   ├── requirements.txt               ← Dependencias de la API
+│   └── test_requests.http             ← Casos de prueba (REST Client / Postman)
+├── models/
+│   ├── best_model.pkl                 ← Gradient Boosting (mejor clasificador)
+│   ├── best_regressor.pkl             ← Mejor modelo de regresión
+│   └── scaler.pkl                     ← StandardScaler para preprocesamiento
+├── data/
+│   ├── student_performance_clean.csv  ← Dataset transformado
+│   ├── data_dictionary.xlsx           ← Diccionario de datos
+│   └── *.png                          ← Visualizaciones generadas
+├── Dockerfile
+└── README.md
+```
+
+---
+
+## Dataset
+
+**Fuente:** [Student Performance CSV](https://raw.githubusercontent.com/daramireh/simonBolivarCienciaDatos/refs/heads/main/Student_Performance.csv)  
+**Registros:** 10,000 estudiantes universitarios  
+**Variables:** 6 (5 features + 1 target)
+
+| Variable | Tipo | Descripción |
+|---|---|---|
+| Hours Studied | Numérica discreta | Horas de estudio por semana |
+| Previous Scores | Numérica continua | Puntaje en evaluaciones anteriores (0–100) |
+| Extracurricular Activities | Categórica nominal | Asistencia a actividades extracurriculares (Yes/No) |
+| Sleep Hours | Numérica discreta | Horas de sueño promedio por noche |
+| Sample Question Papers Practiced | Numérica discreta | Ejercicios prácticos resueltos |
+| **Performance Index** | Numérica continua | **Variable objetivo — índice de rendimiento (0–100)** |
+
+---
+
+## Metodología
+
+### Fase 1 — Estructuras de Datos
+- Carga directa del dataset desde URL
+- Construcción del diccionario de datos con tipos estadísticos
+- Visualizaciones: histogramas, heatmap de correlaciones, boxplots, scatter plots
+- Transformaciones: codificación binaria de `Extracurricular Activities`, creación de variable `rendimiento_bajo` (umbral = Q1), renombrado a snake_case
+
+### Fase 2 — Análisis Exploratorio
+- Estadística descriptiva con coeficiente de variación por variable
+- **Test estadístico:** Shapiro-Wilk (normalidad) → Mann-Whitney U + Cohen's d para comparar rendimiento entre grupos extracurriculares
+- **Clustering K-Means (k=3):** método del codo + Silhouette score para identificar grupos de estudiantes (bajo, medio y alto rendimiento)
+
+### Fase 3 — Modelos de Machine Learning
+
+#### Regresión — predecir `indice_rendimiento`
+| Modelo | R² | RMSE |
+|---|---|---|
+| Regresión Lineal | — | — |
+| Random Forest Regressor | — | — |
+| XGBoost Regressor | — | — |
+
+#### Clasificación — predecir `rendimiento_bajo` (0/1)
+| Modelo | F1-score | AUC-ROC |
+|---|---|---|
+| Regresión Logística | — | — |
+| Árbol de Decisión | — | — |
+| Random Forest | — | — |
+| Gradient Boosting | **0.9424** | **0.997** |
+| XGBoost | — | — |
+
+**Modelo seleccionado: Gradient Boosting**
+
+**Métrica principal: F1-score**, porque:
+1. El dataset está desbalanceado (aprox. 25% bajo rendimiento) — accuracy sola es engañosa
+2. El costo de un falso negativo (no detectar a un estudiante en riesgo) es mayor que el de un falso positivo
+3. F1-score equilibra Precision y Recall como media armónica
+4. AUC-ROC = 0.997 confirma excelente capacidad discriminativa
+
+---
+
+## API FastAPI
+
+### Correr localmente (entorno virtual en revisión)
+
+```bash
+# 1. Activar entorno virtual
+# Windows:
+venv\Scripts\activate
+
+# 2. Instalar dependencias
+pip install fastapi "uvicorn[standard]" scikit-learn xgboost joblib numpy pydantic
+
+# 3. Correr desde la raíz del proyecto
+uvicorn api.main:app --reload --port 8000
+```
+
+Swagger UI disponible en: **http://localhost:8000/docs**
+
+### Correr con Docker (por revisar)
+
+```bash
+docker build -t student-api .
+docker run -p 8000:8000 student-api
+```
+
+### Endpoints
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/` | Health check — estado del modelo |
+| POST | `/predict` | Predecir riesgo sin guardar registro |
+| POST | `/students` | Registrar estudiante + predecir + guardar |
+| GET | `/students` | Listar todos los registros |
+| GET | `/students/{id}` | Obtener estudiante por ID |
+| PUT | `/students/{id}` | Actualizar datos y recalcular predicción |
+| DELETE | `/students/{id}` | Eliminar registro |
+
+### Ejemplo de uso — POST `/predict`
+
+**Request:**
+```json
+{
+  "horas_de_estudio": 2,
+  "resultados_anteriores": 40,
+  "extracurricular": 0,
+  "horas_sueno": 4,
+  "num_ejercicios_resueltos": 1
+}
+```
+
+**Response:**
+```json
+{
+  "rendimiento_bajo": true,
+  "probabilidad": 0.9312,
+  "mensaje": "Alto riesgo de bajo rendimiento — se recomienda intervención inmediata."
+}
+```
+
+### Principios SOLID aplicados
+
+| Principio | Aplicación |
+|---|---|
+| **S** — Single Responsibility | Cada módulo tiene una sola función: `schemas.py` define contratos, `service.py` predice, `crud.py` almacena, `main.py` enruta |
+| **O** — Open/Closed | Se puede cambiar el modelo en `service.py` sin modificar los endpoints |
+| **L** — Liskov Substitution | Los schemas de entrada son intercambiables entre endpoints |
+| **I** — Interface Segregation | Endpoints pequeños y específicos, cada uno con una responsabilidad |
+| **D** — Dependency Inversion | `main.py` depende de abstracciones (`service`, `crud`), no de implementaciones directas |
+
+---
+
+## Instalación completa
+
+```bash
+# Crear y activar entorno virtual
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # Mac/Linux
+
+# Instalar dependencias del notebook
+pip install pandas numpy matplotlib seaborn scipy scikit-learn xgboost joblib jupyter ipykernel openpyxl
+
+# Instalar dependencias de la API
+pip install fastapi "uvicorn[standard]"
+```
+
+---
+
+## Pruebas de la API
+
+Los casos de prueba están en `api/test_requests.http`. Se pueden ejecutar con:
+- **VS Code REST Client** (extensión): abrir el archivo y hacer clic en "Send Request"
+- **Swagger UI**: http://localhost:8000/docs
+- **Postman**: importar las requests manualmente
+
+---
+
+## Hallazgos
+
+- **`resultados_anteriores`** y **`horas_de_estudio`** son los factores más determinantes del rendimiento
+- Las actividades extracurriculares **no presentan diferencia estadísticamente significativa** en el rendimiento (Mann-Whitney U, tamaño del efecto pequeño)
+- El clustering identificó **3 perfiles claros** de estudiantes con características diferenciadas
+- El modelo de Gradient Boosting alcanza **F1=0.9424 y AUC-ROC=0.997**, siendo altamente confiable para detección temprana
+
+---
+
+## Stack tecnológico
+
+`Python 3.9` · `pandas` · `numpy` · `matplotlib` · `seaborn` · `scikit-learn` · `xgboost` · `scipy` · `FastAPI` · `uvicorn` · `joblib` · `Docker`
+
+
+
+
