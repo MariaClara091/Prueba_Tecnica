@@ -150,15 +150,14 @@ st.dataframe(
 st.subheader("Principales Hallazgos")
 
 st.info("""
-• Estados Unidos es la selección con mejor rendimiento histórico.
+• Estados Unidos es la selección con mejor rendimiento histórico a lo largo de los torneos.
 
 • El número de goles por torneo muestra una tendencia creciente en las
-ediciones más recientes.
+ediciones más actuales.
 
-• Las selecciones europeas han incrementado significativamente su competitividad.
+• Las selecciones europeas han incrementado significativamente su competitividad a lo largo del tiempo.
 
-• La asistencia promedio ha aumentado de forma considerable desde 1991,
-reflejando el crecimiento del fútbol femenino a nivel mundial.
+• La asistencia promedio ha aumentado desde 1991, reflejando el crecimiento del fútbol femenino a nivel mundial.
 """)
 
 with st.sidebar:
