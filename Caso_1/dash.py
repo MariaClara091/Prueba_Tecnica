@@ -166,5 +166,5 @@ with st.sidebar:
     st.markdown("""
 
     Autor:
-    María Clara
+    María Clara Ávila Chinchia
     """)
