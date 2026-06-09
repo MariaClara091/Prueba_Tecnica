@@ -133,3 +133,9 @@ Los resultados generados incluyen:
 * Tabla de goleadoras del Mundial Femenino 2023.
 * Tabla histórica consolidada de rendimiento por selección.
 
+## Link de visualizaciones
+
+```bash
+https://pruebatecnicacaso1.streamlit.app/
+```
+
